@@ -119,7 +119,7 @@ while True:
         cursor.execute("SELECT SSN, Name FROM EMPLOYEE")
         print(cursor.fetchall())
         
-        cursor.execute("INSERT INTO EMPLOYEE (SSN, Name, DateOfBirth, StreetNumber, StreetName, City, State, Position, HourlyRate, PhoneNum, Dept_ID) VALUES ('999-00-1111', 'Sam Smith', '11-11-2005', '123', 'Beaver', 'Dearborn', 'MI', 'Sales',17.00, '111-222-3334', 1)")
+        cursor.execute("INSERT INTO EMPLOYEE (SSN, Name, DateOfBirth, StreetNumber, StreetName, City, State, Position, HourlyRate, PhoneNum, Dept_ID) VALUES ('999-00-1111', 'Sam Smith', '11-11-2005', '123', 'Beaver', 'Dearborn', 'MI', 'Sales Associate',17.00, '111-222-3334', 1)")
         connection.commit()
         
         print("After:")
