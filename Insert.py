@@ -21,13 +21,13 @@ cursor.executemany("""
     INSERT OR IGNORE INTO EMPLOYEE (SSN, Name, DateOfBirth, StreetNumber, StreetName, City, State, Position, HourlyRate, PhoneNum, Dept_ID)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """, [
-    ('111-22-3333', 'Alice Johnson', '1990-04-12', '101', 'Maple St',   'Monroe',    'MI', 'Sales Associate', 15.00, '734-555-0101', 1),
-    ('222-33-4444', 'Bob Smith',     '1985-07-23', '202', 'Oak Ave',    'Monroe',    'MI', 'Sales Associate', 15.50, '734-555-0102', 1),
-    ('333-44-5555', 'Carol White',   '1992-01-05', '303', 'Pine Rd',    'Toledo',    'OH', 'Inventory Clerk', 14.00, '419-555-0103', 2),
-    ('444-55-6666', 'David Brown',   '1980-11-30', '404', 'Elm Blvd',   'Monroe',    'MI', 'Inventory Clerk', 14.50, '734-555-0104', 2),
-    ('555-66-7777', 'Eva Martinez',  '1978-03-18', '505', 'Cedar Ln',   'Ann Arbor', 'MI', 'Store Manager',   22.00, '734-555-0105', 3),
-    ('666-77-8888', 'Frank Lee',     '1983-09-09', '606', 'Birch Dr',   'Monroe',    'MI', 'Dept Manager',    20.00, '734-555-0106', 1),
-    ('777-88-9999', 'Grace Kim',     '1995-06-14', '707', 'Spruce Way', 'Toledo',    'OH', 'Dept Manager',    19.00, '419-555-0107', 2),
+    ('111-22-3333', 'Alice Johnson', '1990-04-12', '101', 'Maple St',   'Macomb',    'MI', 'Sales Associate', 15.00, '734-555-0101', 1),
+    ('222-33-4444', 'Bob Smith',     '1985-07-23', '202', 'Oak Ave',    'Dearborn',    'MI', 'Sales Associate', 15.50, '734-555-0102', 1),
+    ('333-44-5555', 'Carol White',   '1992-01-05', '303', 'Grandma Rd',    'Toledo',    'OH', 'Inventory Clerk', 14.00, '419-555-0103', 2),
+    ('444-55-6666', 'David Brown',   '1980-11-30', '404', 'Ridge Blvd',   'Madison Heights',    'MI', 'Inventory Clerk', 14.50, '734-555-0104', 2),
+    ('555-66-7777', 'Eva Martinez',  '1978-03-18', '505', 'Monkey Ln',   'Ann Arbor', 'MI', 'Store Manager',   22.00, '734-555-0105', 3),
+    ('666-77-8888', 'Frank Lee',     '1983-09-09', '606', 'Cow Dr',   'Monroe',    'MI', 'Dept Manager',    20.00, '734-555-0106', 1),
+    ('777-88-9999', 'Grace Kim',     '1995-06-14', '707', 'Cat Way', 'Toledo',    'OH', 'Dept Manager',    19.00, '419-555-0107', 2),
 ])
 
 cursor.execute("UPDATE DEPARTMENT SET Manager_SSN = '555-66-7777' WHERE Dept_ID = 3;")
@@ -38,23 +38,23 @@ cursor.executemany("""
     INSERT OR IGNORE INTO PUBLISHER (Publisher_ID, Publisher_Name, emailAddress, PhoneNumber)
     VALUES (?, ?, ?, ?)
 """, [
-    (1, 'Nintendo',          'contact@nintendo.com',    '800-255-3700'),
-    (2, 'Sony Interactive',  'support@playstation.com', '800-345-7669'),
-    (3, 'Xbox Game Studios', 'support@xbox.com',        '800-469-9269'),
-    (4, 'Capcom',            'info@capcom.com',         '800-225-7266'),
-    (5, 'Bandai Namco',      'info@bandainamco.com',    '800-963-0684'),
+    (1, 'Nintendo',          'contact@nintendo.com',    '800-123-1233'),
+    (2, 'Sony Interactive',  'support@playstation.com', '800-234-2344'),
+    (3, 'Xbox Game Studios', 'support@xbox.com',        '800-469-4696'),
+    (4, 'Capcom',            'info@capcom.com',         '800-225-5555'),
+    (5, 'Bandai Namco',      'info@bandainamco.com',    '800-963-1111'),
 ])
 
 cursor.executemany("""
     INSERT OR IGNORE INTO TITLE (Title_ID, Name, Description, Release_Date, Publisher_ID)
     VALUES (?, ?, ?, ?, ?)
 """, [
-    (1, 'The Legend of Zelda: Breath of the Wild', 'Open world adventure game.',        '2017-03-03', 1),
-    (2, 'God of War',                              'Norse mythology action game.',       '2018-04-20', 2),
-    (3, 'Halo Infinite',                           'Sci-fi first person shooter.',       '2021-12-08', 3),
-    (4, 'Monster Hunter Rise',                     'Hunt monsters in feudal Japan.',     '2021-03-26', 4),
-    (5, 'Elden Ring',                              'Open world dark fantasy RPG.',       '2022-02-25', 5),
-    (6, 'Super Mario Odyssey',                     'Platformer with world exploration.', '2017-10-27', 1),
+    (1, 'The Legend of Zelda: Breath of the Wild', 'Open world adventure.',        '2017-03-03', 1),
+    (2, 'God of War',                              'Norse mythology action.',       '2018-04-20', 2),
+    (3, 'Halo Infinite',                           'Sci-fi shooter.',       '2021-12-08', 3),
+    (4, 'Monster Hunter Rise',                     'Hunt monsters in Japan.',     '2021-03-26', 4),
+    (5, 'Elden Ring',                              'dark fantasy RPG.',       '2022-02-25', 5),
+    (6, 'Super Mario Odyssey',                     'open world platformer.', '2017-10-27', 1),
     (7, 'Spider-Man: Miles Morales',               'Superhero action adventure.',        '2020-11-12', 2),
 ])
 
@@ -133,11 +133,11 @@ cursor.executemany("""
     INSERT OR IGNORE INTO MEMBER (Customer_ID, Join_Date, EmailAddress, PhoneNum, Loyalty_Points)
     VALUES (?, ?, ?, ?, ?)
 """, [
-    (1, '2021-06-01', 'jdoe@email.com',    '734-555-1001', 320),
-    (2, '2020-11-15', 'ssmith@email.com',  '734-555-1002', 150),
-    (3, '2022-03-22', 'mjones@email.com',  '419-555-1003', 540),
-    (4, '2019-08-30', 'lwilson@email.com', '734-555-1004', 800),
-    (5, '2023-01-10', 'ataylor@email.com', '734-555-1005',  90),
+    (1, '2021-06-01', 'jdoe@gmail.com',    '734-555-1001', 320),
+    (2, '2020-11-15', 'supersmith@outlook.com',  '734-555-1002', 150),
+    (3, '2022-03-22', 'mjonesbossman@yahoo.com',  '419-555-1003', 540),
+    (4, '2019-08-30', 'lwilsonradio@gmail.com', '734-555-1004', 800),
+    (5, '2023-01-10', 'amazingtaylor@icloud.com', '734-555-1005',  90),
 ])
 
 cursor.executemany("""

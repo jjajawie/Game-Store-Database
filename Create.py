@@ -145,19 +145,6 @@ cursor.execute("""
         FOREIGN KEY (SKU)            REFERENCES INVENTORY(SKU)
     );
 """)
- 
-cursor.execute("""
-    CREATE TRIGGER IF NOT EXISTS fk_dept_manager
-    BEFORE INSERT ON DEPARTMENT
-    FOR EACH ROW
-    WHEN NEW.Manager_SSN IS NOT NULL
-    BEGIN
-        SELECT RAISE(ABORT, 'Foreign key violation: Manager_SSN not in EMPLOYEE')
-        WHERE NOT EXISTS (
-            SELECT 1 FROM EMPLOYEE WHERE SSN = NEW.Manager_SSN
-        );
-    END;
-""")
 
 connection.commit()
 connection.close()

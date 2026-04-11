@@ -8,133 +8,137 @@ connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 cursor.execute("PRAGMA foreign_keys = ON;")
 
-def run_query(title, sql, params=()):
-    print(f"\n{'='*60}")
-    print(f" {title}")
-    print('='*60)
-    cursor.execute(sql, params)
-    columns = [d[0] for d in cursor.description]
-    print("  " + " | ".join(columns))
-    print("  " + "-" * 50)
-    for row in cursor.fetchall():
-        print("  " + " | ".join(str(v) for v in row))
+while True:
+    print("1. List Dept Managers")
+    print("2. Show Used Inventory")
+    print("3. Show Employees making $20 or more")
+    print("4. Change Loyalty Member Email")
+    print("5. Put Item on Sale")
+    print("6. List Employees by Sales (Ascending)")
+    print("7. Give Raise to Inventory Dept")
+    print("8. Remove Member")
+    print("9. Hire New Employee")
+    print("10. Best Selling Titles")
+    print("0. Exit")
 
-run_query(
-    "Q1: All Employees and Their Department",
-    """
-    SELECT e.Name, e.Position, e.HourlyRate, d.Dept_Name
-    FROM EMPLOYEE e
-    JOIN DEPARTMENT d ON e.Dept_ID = d.Dept_ID
-    ORDER BY d.Dept_Name, e.Name
-    """
-)
+    choice = input("\nSelect an option: ")
 
-run_query(
-    "Q2: Titles with Publisher and Genres",
-    """
-    SELECT t.Name AS Title, p.Publisher_Name, GROUP_CONCAT(g.Genre_Name, ', ') AS Genres
-    FROM TITLE t
-    JOIN PUBLISHER p ON t.Publisher_ID = p.Publisher_ID
-    JOIN CATEGORIZED_AS ca ON t.Title_ID = ca.Title_ID
-    JOIN GENRE g ON ca.Genre_ID = g.Genre_ID
-    GROUP BY t.Title_ID
-    ORDER BY t.Name
-    """
-)
+    if choice == "1":
+        cursor.execute("SELECT Dept_name, Name FROM DEPARTMENT JOIN EMPLOYEE ON Manager_SSN = SSN")
+        results = cursor.fetchall()
+        print("Department | Name")
+        for row in results:
+            print(row)
 
-run_query(
-    "Q3: Full Inventory List",
-    """
-    SELECT i.SKU, t.Name AS Title, i.Condition, i.Price
-    FROM INVENTORY i
-    JOIN TITLE t ON i.Title_ID = t.Title_ID
-    ORDER BY t.Name, i.Condition
-    """
-)
+    elif choice == "2":
+        cursor.execute("""SELECT TITLE.Name, INVENTORY.SKU 
+            FROM INVENTORY 
+            JOIN TITLE ON INVENTORY.Title_ID = TITLE.Title_ID 
+            WHERE INVENTORY.Condition = 'Used'""")
+        results = cursor.fetchall()
+        print("Title | SKU")
+        for row in results:
+            print(row)
 
-run_query(
-    "Q4: All Transactions with Employee and Customer",
-    """
-    SELECT tr.Transaction_ID, tr.Date, tr.TotalCost,
-           e.Name AS Employee,
-           CASE
-               WHEN m.Customer_ID IS NOT NULL THEN 'Member'
-               ELSE 'Guest'
-           END AS Customer_Type,
-           tr.Customer_ID
-    FROM "TRANSACTIONS" tr
-    JOIN EMPLOYEE e ON tr.Employee_SSN = e.SSN
-    LEFT JOIN MEMBER m ON tr.Customer_ID = m.Customer_ID
-    ORDER BY tr.Date
-    """
-)
+    elif choice == "3":
+        cursor.execute("SELECT Name, HourlyRate FROM EMPLOYEE WHERE HourlyRate >= 20.00")
+        results = cursor.fetchall()
+        print("Name | Hourly")
+        for row in results:
+            print(f"{row[0]} {row[1]:.2f}")
 
-run_query(
-    "Q5: Total Sales Revenue Per Employee",
-    """
-    SELECT e.Name, COUNT(tr.Transaction_ID) AS Transactions, 
-           ROUND(SUM(tr.TotalCost), 2) AS TotalRevenue
-    FROM EMPLOYEE e
-    JOIN "TRANSACTIONS" tr ON e.SSN = tr.Employee_SSN
-    GROUP BY e.SSN
-    ORDER BY TotalRevenue DESC
-    """
-)
+    elif choice == "4":
+        print("Before:")
+        print(" ID | Email")
+        cursor.execute("SELECT Customer_ID, EmailAddress FROM MEMBER WHERE Customer_ID = 1")
+        print(cursor.fetchone())
+        
+        cursor.execute("UPDATE MEMBER SET EmailAddress = 'johndoe@outlook.com' WHERE Customer_ID = 1")
+        connection.commit()
+        print("After:")
+        print(" ID | Email")
+        cursor.execute("SELECT Customer_ID, EmailAddress FROM MEMBER WHERE Customer_ID = 1")
+        print(cursor.fetchone())
+        
+    elif choice == "5":
+        print("Before:")
+        print("SKU | Price")
+        cursor.execute("SELECT SKU, Price FROM INVENTORY WHERE SKU = 'SKU-001'")
+        print(cursor.fetchone())
 
-run_query(
-    "Q6: Members Ranked by Loyalty Points",
-    """
-    SELECT m.Customer_ID, m.EmailAddress, m.PhoneNum, m.Loyalty_Points
-    FROM MEMBER m
-    ORDER BY m.Loyalty_Points DESC
-    """
-)
+        cursor.execute("UPDATE INVENTORY SET Price = 19.99 WHERE SKU = 'SKU-001'")
+        connection.commit()
 
-run_query(
-    "Q7: Titles and Their Available Platforms",
-    """
-    SELECT t.Name AS Title, GROUP_CONCAT(p.Platform_Name, ', ') AS Platforms
-    FROM TITLE t
-    JOIN AVAILABLE_ON ao ON t.Title_ID = ao.Title_ID
-    JOIN PLATFORM p ON ao.Platform_ID = p.Platform_ID
-    GROUP BY t.Title_ID
-    ORDER BY t.Name
-    """
-)
+        print("After:")
+        print("SKU | Price")
+        cursor.execute("SELECT SKU, Price FROM INVENTORY WHERE SKU = 'SKU-001'")
+        print(cursor.fetchone())
+    
 
-run_query(
-    "Q8: Checkout Items Per Transaction with Title",
-    """
-    SELECT ci.Transaction_ID, ci.Item_Num, t.Name AS Title,
-           i.Condition, ci.Sale_Price
-    FROM CHECKOUT_ITEMS ci
-    JOIN INVENTORY i ON ci.SKU = i.SKU
-    JOIN TITLE t ON i.Title_ID = t.Title_ID
-    ORDER BY ci.Transaction_ID, ci.Item_Num
-    """
-)
+    elif choice == "6":
+        cursor.execute("""SELECT EMPLOYEE.Name, SUM(Transactions.TotalCost) 
+            FROM EMPLOYEE 
+            JOIN TRANSACTIONS ON SSN = Employee_SSN 
+            GROUP BY Name 
+            ORDER BY SUM(TotalCost) ASC""")
+        print("Name | Total Sales")
+        for row in cursor.fetchall():
+            print(row)
 
-run_query(
-    "Q9: Best Selling Titles by Copies Sold",
-    """
-    SELECT t.Name AS Title, COUNT(ci.SKU) AS CopiesSold,
-           ROUND(SUM(ci.Sale_Price), 2) AS TotalRevenue
-    FROM CHECKOUT_ITEMS ci
-    JOIN INVENTORY i ON ci.SKU = i.SKU
-    JOIN TITLE t ON i.Title_ID = t.Title_ID
-    GROUP BY t.Title_ID
-    ORDER BY CopiesSold DESC
-    """
-)
+    elif choice == "7":
+        print("Before:")
+        print("Name | Hourly Rate")
+        cursor.execute("SELECT Name, HourlyRate FROM EMPLOYEE WHERE Dept_ID = (SELECT Dept_ID FROM DEPARTMENT WHERE Dept_name = 'Inventory')")
+        for row in cursor.fetchall(): print(f"{row[0]} {row[1]:.2f}")
+        
+        cursor.execute("UPDATE EMPLOYEE SET HourlyRate = HourlyRate * 1.10 WHERE Dept_ID = (SELECT Dept_ID FROM DEPARTMENT WHERE Dept_name = 'Inventory')")
+        connection.commit()
+        print("After:")
+        print("Name | Hourly Rate")
+        cursor.execute("SELECT Name, HourlyRate FROM EMPLOYEE WHERE Dept_ID = (SELECT Dept_ID FROM DEPARTMENT WHERE Dept_name = 'Inventory')")
+        for row in cursor.fetchall(): print(f"{row[0]} {row[1]:.2f}")
 
-run_query(
-    "Q10: Departments with Manager and Budget",
-    """
-    SELECT d.Dept_Name, e.Name AS Manager, d.Budget
-    FROM DEPARTMENT d
-    JOIN EMPLOYEE e ON d.Manager_SSN = e.SSN
-    ORDER BY d.Budget DESC
-    """
-)
+    elif choice == "8":
+        print("BEFORE:")
+        print("Customer ID")
+        cursor.execute("SELECT Customer_ID FROM MEMBER")
+        print(cursor.fetchall())
+        
+        cursor.execute("DELETE FROM MEMBER WHERE Customer_ID = 5")
+        connection.commit()
+        
+        print("AFTER:")
+        print("Customer ID")
+        cursor.execute("SELECT Customer_ID FROM MEMBER")
+        print(cursor.fetchall())
+
+    elif choice == "9":
+        
+        print("Before:")
+        print("SSN | Name")
+        cursor.execute("SELECT SSN, Name FROM EMPLOYEE")
+        print(cursor.fetchall())
+        
+        cursor.execute("INSERT INTO EMPLOYEE (SSN, Name, DateOfBirth, StreetNumber, StreetName, City, State, Position, HourlyRate, PhoneNum, Dept_ID) VALUES ('999-00-1111', 'Sam Smith', '11-11-2005', '123', 'Beaver', 'Dearborn', 'MI', 'Sales',17.00, '111-222-3334', 1)")
+        connection.commit()
+        
+        print("After:")
+        print("SSN | Name")
+        cursor.execute("SELECT SSN, Name FROM EMPLOYEE")
+        print(cursor.fetchall())
+
+    elif choice == "10":
+        cursor.execute("""SELECT Title.Name, COUNT(CI.SKU) FROM TITLE 
+            JOIN INVENTORY I ON Title.Title_ID = I.Title_ID 
+            JOIN CHECKOUT_ITEMS CI ON I.SKU = CI.SKU 
+            GROUP BY Title.Name ORDER BY 2 DESC""")
+        print("New Employee:")
+        for row in cursor.fetchall():
+            print(row)
+
+    elif choice == "0":
+        break
+    else:
+        print("Invalid choice.")
 
 connection.close()
